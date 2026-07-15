@@ -1,4 +1,3 @@
-/* General Setup */
 body {
     margin: 0;
     overflow: hidden;
@@ -6,7 +5,25 @@ body {
     background-color: #000;
 }
 
-/* UI Scanning Overlay */
+/* Debug Banner */
+.debug-banner {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    z-index: 100;
+    pointer-events: none;
+    border: 1px solid #333;
+    text-align: center;
+    max-width: 80%;
+}
+
+/* Scanning Overlay */
 .overlay {
     position: absolute;
     top: 0;
@@ -19,30 +36,36 @@ body {
     align-items: center;
     z-index: 10;
     pointer-events: none;
-    background: rgba(0, 0, 0, 0.4);
-    transition: opacity 0.5s ease;
+    background: rgba(0, 0, 0, 0.2);
+    transition: opacity 0.4s ease;
+}
+
+.overlay.hidden {
+    opacity: 0;
+    display: none !important;
 }
 
 .scanner-frame {
-    width: 250px;
-    height: 250px;
-    border: 4px solid #009639; /* Petromin Brand Green */
+    width: 260px;
+    height: 260px;
+    border: 4px dashed #009639; /* Petromin Green */
     border-radius: 24px;
-    box-shadow: 0 0 20px rgba(0, 150, 57, 0.6);
+    box-shadow: 0 0 25px rgba(0, 150, 57, 0.4);
     animation: pulse 2s infinite ease-in-out;
 }
 
 .overlay p {
     color: #fff;
-    margin-top: 20px;
-    font-size: 1.1rem;
+    margin-top: 24px;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-    background: rgba(0,0,0,0.6);
-    padding: 8px 16px;
+    background: rgba(0,0,0,0.7);
+    padding: 8px 18px;
     border-radius: 20px;
 }
 
-/* Informational Card (Modal Style) */
+/* Information Popup Card */
 .card {
     position: fixed;
     bottom: 30px;
@@ -50,14 +73,14 @@ body {
     transform: translateX(-50%) translateY(0);
     width: 90%;
     max-width: 400px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 24px;
     padding: 24px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
     backdrop-filter: blur(10px);
     z-index: 20;
     box-sizing: border-box;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.125);
 }
 
 .card.hidden {
@@ -76,7 +99,7 @@ body {
 .card-header h2 {
     margin: 0;
     color: #111;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
 }
 
 .badge {
@@ -85,7 +108,7 @@ body {
     padding: 4px 10px;
     border-radius: 12px;
     font-size: 0.75rem;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .card-body {
@@ -103,16 +126,19 @@ body {
     margin-bottom: 6px;
 }
 
-/* Buttons */
 #close-btn {
     position: absolute;
     top: 15px;
     right: 15px;
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     cursor: pointer;
-    color: #888;
+    color: #aaa;
+}
+
+#close-btn:hover {
+    color: #333;
 }
 
 .cta-button {
@@ -122,19 +148,13 @@ body {
     color: white;
     text-decoration: none;
     padding: 12px;
-    border-radius: 10px;
+    border-radius: 12px;
     font-weight: bold;
-    margin-top: 15px;
-    transition: background 0.2s;
+    margin-top: 16px;
 }
 
-.cta-button:hover {
-    background: #00702a;
-}
-
-/* Animations */
 @keyframes pulse {
-    0% { transform: scale(0.95); opacity: 0.7; }
-    50% { transform: scale(1.05); opacity: 1; }
-    100% { transform: scale(0.95); opacity: 0.7; }
+    0% { transform: scale(0.98); opacity: 0.7; }
+    50% { transform: scale(1.02); opacity: 1; }
+    100% { transform: scale(0.98); opacity: 0.7; }
 }
