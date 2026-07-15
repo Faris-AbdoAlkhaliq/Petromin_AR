@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petromin AR Experience</title>
+    <!-- A-Frame (3D Framework) -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <!-- MindAR (Image Tracking Library) -->
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.min.js"></script>
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Scanning Overlay: Guides the user to point their phone at the logo -->
+    <div id="scanning-overlay" class="overlay">
+        <div class="scanner-frame"></div>
+        <p>Scan the <strong>Petromin</strong> Logo to Start</p>
+    </div>
+
+    <!-- Information Card: Appears dynamically when the logo is detected -->
+    <div id="info-card" class="card hidden">
+        <button id="close-btn">&times;</button>
+        <div class="card-header">
+            <h2>Petromin</h2>
+            <span class="badge">Enterprise</span>
+        </div>
+        <div class="card-body">
+            <p><strong>Petromin Corporation</strong> is a leading multi-national automotive services company and a global lubricant manufacturer based in Saudi Arabia.</p>
+            <ul>
+                <li>⚡ National champion in automotive services</li>
+                <li>🌍 Operating in over 40 countries</li>
+                <li>🌱 Committed to sustainable & electric mobility</li>
+            </ul>
+        </div>
+        <a href="https://www.petromin.com" target="_blank" class="cta-button">Visit Official Website</a>
+    </div>
+
+    <!-- AR Scene Setup -->
+    <!-- Note: "imageTargetSrc" points to your compiled target file -->
+    <a-scene 
+        mindar-image="imageTargetSrc: ./targets.mind; filterMinCF:0.001; filterBeta: 1000" 
+        color-space="sRGB" 
+        renderer="colorManagement: true, physicallyCorrectLights" 
+        vr-mode-ui="enabled: false" 
+        device-orientation-permission-ui="enabled: false">
+        
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+        <!-- The AR Target (Index 0 is the Petromin Logo) -->
+        <a-entity id="petromin-target" mindar-image-target="targetIndex: 0">
+            <!-- 3D visual plane placed directly on the physical logo (Hologram effect) -->
+            <a-plane 
+                position="0 0 0" 
+                rotation="0 0 0" 
+                width="1" 
+                height="1" 
+                material="src: #holo-texture; transparent: true; opacity: 0.8">
+            </a-plane>
+        </a-entity>
+        
+        <!-- Assets Definition (Preloading 3D textures/assets) -->
+        <a-assets>
+            <img id="holo-texture" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.png" alt="AR Guide Graphic">
+        </a-assets>
+    </a-scene>
+
+    <!-- Custom Logic Script -->
+    <script src="app.js"></script>
+</body>
+</html>

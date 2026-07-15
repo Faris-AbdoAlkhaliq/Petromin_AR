@@ -1,0 +1,140 @@
+/* General Setup */
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #000;
+}
+
+/* UI Scanning Overlay */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.4);
+    transition: opacity 0.5s ease;
+}
+
+.scanner-frame {
+    width: 250px;
+    height: 250px;
+    border: 4px solid #009639; /* Petromin Brand Green */
+    border-radius: 24px;
+    box-shadow: 0 0 20px rgba(0, 150, 57, 0.6);
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.overlay p {
+    color: #fff;
+    margin-top: 20px;
+    font-size: 1.1rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.6);
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+/* Informational Card (Modal Style) */
+.card {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    width: 90%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    z-index: 20;
+    box-sizing: border-box;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card.hidden {
+    transform: translateX(-50%) translateY(150%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.card-header h2 {
+    margin: 0;
+    color: #111;
+    font-size: 1.5rem;
+}
+
+.badge {
+    background: #009639;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.card-body {
+    font-size: 0.9rem;
+    color: #444;
+    line-height: 1.5;
+}
+
+.card-body ul {
+    padding-left: 20px;
+    margin: 12px 0;
+}
+
+.card-body li {
+    margin-bottom: 6px;
+}
+
+/* Buttons */
+#close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #888;
+}
+
+.cta-button {
+    display: block;
+    text-align: center;
+    background: #009639;
+    color: white;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: bold;
+    margin-top: 15px;
+    transition: background 0.2s;
+}
+
+.cta-button:hover {
+    background: #00702a;
+}
+
+/* Animations */
+@keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.7; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.7; }
+}
