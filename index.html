@@ -1,72 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Petromin AR Experience</title>
-    <!-- A-Frame VR/AR Core Framework -->
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <!-- MindAR Image Tracking Engine -->
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petromin AR</title>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
 </head>
 <body>
 
-    <!-- Error/Status Logger (Helps debug black screen issues instantly) -->
-    <div id="debug-logger" class="debug-banner">Initializing camera...</div>
+<section id="splash" class="screen active">
+  <p style="font-size:0.6rem;letter-spacing:0.35em;text-transform:uppercase;color:var(--glow);opacity:0.8">Petromin Corp — Immersive AR Experience</p>
+  <h1><em>Petromin</em>AR</h1>
+  <p>Exploring automotive and energy systems in 3D</p>
+  <div class="pills">
+    <span class="pill">🛢️ Lubricants</span>
+    <span class="pill">🚗 Express Care</span>
+    <span class="pill">⚡ Electromin</span>
+    <span class="pill">⛽ Fuel Stations</span>
+  </div>
+  <button class="btn-primary" onclick="show('select')">Explore Our Sectors</button>
+  <p><b>iOS Safari</b> &amp; <b>Android Chrome</b> supported<br>Project corporate modules in your immediate space<br>Tap any card element to learn more</p>
+</section>
 
-    <!-- Scanning Helper Overlay -->
-    <div id="scanning-overlay" class="overlay">
-        <div class="scanner-frame"></div>
-        <p>Scan the <strong>Petromin</strong> Logo</p>
-    </div>
+<section id="select" class="screen">
+  <header>
+    <p>Choose your corporate encounter</p>
+    <h2>Which sector will you <em>explore?</em></h2>
+  </header>
+  <div class="cards" id="cards"></div>
+</section>
 
-    <!-- Company Info Dynamic Card -->
-    <div id="info-card" class="card hidden">
-        <button id="close-btn">&times;</button>
-        <div class="card-header">
-            <h2>Petromin</h2>
-            <span class="badge">Enterprise</span>
+<section id="viewer" class="screen">
+  <nav class="vhead">
+    <button id="backBtn" onclick="show('select')">← Back</button>
+    <span class="logo"><em>Petromin</em>AR</span>
+  </nav>
+
+  <model-viewer id="mv" src="" alt=""
+    scale="1 1 1"
+    camera-controls touch-action="pan-y"
+    auto-rotate auto-rotate-delay="800" rotation-per-second="15deg"
+    autoplay
+    shadow-intensity="1" shadow-softness="0.5"
+    environment-image="neutral" exposure="1" tone-mapping="commerce"
+    ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto" ar-placement="floor" xr-environment>
+    <button slot="ar-button" style="display:none"></button>
+  </model-viewer>
+
+  <div class="vfoot">
+    <small>Drag to rotate · Pinch to zoom · Tap model for details</small>
+    <button id="arBtn">📷 &nbsp; Place in Your World</button>
+  </div>
+</section>
+
+<aside id="infoCard">
+  <div class="info-wrap">
+    <div class="info-bar"></div>
+    <div class="info-body">
+      <div class="info-head">
+        <div>
+          <h2 id="iName"></h2>
+          <small id="iSci"></small>
         </div>
-        <div class="card-body">
-            <p><strong>Petromin Corporation</strong> is a leading multi-national automotive services company and a global lubricant manufacturer based in Saudi Arabia.</p>
-            <ul>
-                <li>⚡ National champion in automotive services</li>
-                <li>🌍 Operating in over 40 countries</li>
-                <li>🌱 Pioneering sustainable & electric mobility</li>
-            </ul>
-        </div>
-        <a href="https://www.petromin.com" target="_blank" class="cta-button">Visit Official Website</a>
+        <span class="info-emoji" id="iEmoji"></span>
+      </div>
+      <hr>
+      <dl class="info-grid">
+        <dt>Primary Focus</dt>  <dd id="iHabitat"></dd>
+        <dt>Core Product</dt>     <dd id="iDiet"></dd>
+        <dt>Reach</dt>    <dd id="iDepth"></dd>
+        <dt>Status</dt>   <dd id="iStatus"></dd>
+      </dl>
+
+      <div class="live-tracking-box">
+        <p class="live-title">📊 Live Operational Sync</p>
+        <p id="obisLoading" style="font-size:0.65rem; color:color-mix(in srgb, var(--foam) 50%, transparent); font-style:italic;">Querying corporate databases...</p>
+        <p id="obisError" style="font-size:0.65rem; color:#ff6b6b; display:none;">Failed to sync with local enterprise databases.</p>
+        <dl class="info-grid" id="obisDl" style="display:none; margin-bottom:0;">
+          <dt>Active Outlets</dt>   <dd id="obisCount">—</dd>
+          <dt>Last Update</dt>    <dd id="obisDate">—</dd>
+          <dt style="grid-column: span 2;">Enterprise Status</dt>
+          <dd id="obisLocation" style="grid-column: span 2; font-size:0.6rem; color:var(--glow);">—</dd>
+        </dl>
+      </div>
+
+      <div class="fact">
+        <p>✦ Industrial Insight</p>
+        <p id="iFact"></p>
+      </div>
+      <button id="closeBtn" onclick="closeInfo()">— Dismiss —</button>
     </div>
+  </div>
+</aside>
 
-    <!-- AR Scene Setup -->
-    <!-- MODIFICATION: Swapped local file path to a verified remote fallback targets file for immediate camera activation -->
-    <a-scene 
-        id="ar-scene"
-        mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.mind; filterMinCF:0.001; filterBeta: 1000;" 
-        color-space="sRGB" 
-        renderer="colorManagement: true, physicallyCorrectLights" 
-        vr-mode-ui="enabled: false" 
-        device-orientation-permission-ui="enabled: false">
-        
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-        <!-- Target Tracking Node -->
-        <a-entity id="petromin-target" mindar-image-target="targetIndex: 0">
-            <a-plane 
-                position="0 0 0" 
-                rotation="0 0 0" 
-                width="1" 
-                height="0.6" 
-                material="src: #holo-texture; transparent: true; opacity: 0.7">
-            </a-plane>
-        </a-entity>
-        
-        <a-assets>
-            <img id="holo-texture" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.png">
-        </a-assets>
-    </a-scene>
-
-    <script src="app.js"></script>
 </body>
 </html>

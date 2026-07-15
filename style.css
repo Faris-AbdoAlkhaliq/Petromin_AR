@@ -1,160 +1,411 @@
-body {
-    margin: 0;
-    overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: #000;
+/* ── Reset & Variables ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:   #0d1117;     /* Deep Steel/Charcoal Gray */
+  --teal: #009639;     /* Petromin Brand Green */
+  --foam: #e2f0e7;     /* Clean Off-White */
+  --glow: #00ff66;     /* High-Visibility Neon Accent Green */
+  --serif: 'Georgia', serif;
+  --mono:  'Courier New', monospace;
 }
 
-/* Debug Banner */
-.debug-banner {
-    position: fixed;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.85);
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    z-index: 100;
-    pointer-events: none;
-    border: 1px solid #333;
-    text-align: center;
-    max-width: 80%;
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--foam);
+  font-family: var(--mono);
 }
 
-/* Scanning Overlay */
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-    pointer-events: none;
-    background: rgba(0, 0, 0, 0.2);
-    transition: opacity 0.4s ease;
+/* ── Shared Utilities ── */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+.screen.active { display: flex; }
+
+button {
+  font-family: var(--mono);
+  cursor: pointer;
+  border: none;
+  background: none;
 }
 
-.overlay.hidden {
-    opacity: 0;
-    display: none !important;
+/* ── Splash Screen ── */
+#splash {
+  background: radial-gradient(ellipse at 50% 65%, #053316, var(--bg));
+  text-align: center;
+  padding: 2rem;
+  gap: 1rem;
 }
 
-.scanner-frame {
-    width: 260px;
-    height: 260px;
-    border: 4px dashed #009639; /* Petromin Green */
-    border-radius: 24px;
-    box-shadow: 0 0 25px rgba(0, 150, 57, 0.4);
-    animation: pulse 2s infinite ease-in-out;
+#splash h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.5rem, 10vw, 5rem);
+  font-weight: 300;
+  color: var(--foam);
+  line-height: 1.1;
 }
 
-.overlay p {
-    color: #fff;
-    margin-top: 24px;
-    font-size: 1rem;
-    letter-spacing: 0.5px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-    background: rgba(0,0,0,0.7);
-    padding: 8px 18px;
-    border-radius: 20px;
+#splash h1 em {
+  font-style: italic;
+  color: var(--glow);
 }
 
-/* Information Popup Card */
-.card {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(0);
-    width: 90%;
-    max-width: 400px;
-    background: rgba(255, 255, 255, 0.98);
-    border-radius: 24px;
-    padding: 24px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-    backdrop-filter: blur(10px);
-    z-index: 20;
-    box-sizing: border-box;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.125);
+#splash p {
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--foam) 60%, transparent);
+  line-height: 2;
 }
 
-.card.hidden {
-    transform: translateX(-50%) translateY(150%);
-    opacity: 0;
-    pointer-events: none;
+#splash p b { color: var(--glow); font-weight: 400; }
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
 }
 
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+.pill {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--glow);
+  border: 1px solid color-mix(in srgb, var(--teal) 40%, transparent);
+  padding: 0.3rem 0.7rem;
+  background: color-mix(in srgb, var(--teal) 10%, transparent);
 }
 
-.card-header h2 {
-    margin: 0;
-    color: #111;
-    font-size: 1.4rem;
+.btn-primary {
+  width: 100%;
+  max-width: 320px;
+  padding: 0.9rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--glow);
+  border: 1.5px solid var(--glow);
+  background: none;
+  transition: background 0.3s, color 0.3s;
 }
 
-.badge {
-    background: #009639;
-    color: white;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
+.btn-primary:hover {
+  background: var(--glow);
+  color: var(--bg);
 }
+
+/* ── Select Screen ── */
+#select {
+  background: var(--bg);
+  justify-content: flex-start;
+  padding: 2rem 1.5rem;
+  gap: 1rem;
+  overflow-y: auto;
+}
+
+#select header { width: 100%; }
+
+#select header p {
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--glow);
+  opacity: 0.7;
+}
+
+#select header h2 {
+  font-family: var(--serif);
+  font-size: 1.9rem;
+  font-weight: 300;
+  color: var(--foam);
+}
+
+#select header h2 em { color: var(--glow); }
+
+/* Sector cards */
+.cards { width: 100%; display: flex; flex-direction: column; gap: 0.8rem; }
+
+article {
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--teal) 25%, transparent);
+  background: color-mix(in srgb, #121e16 80%, transparent);
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+  overflow: hidden;
+}
+
+article:active {
+  border-color: var(--glow);
+  transform: scale(0.99);
+}
+
+.card-stripe { height: 2px; }
 
 .card-body {
-    font-size: 0.9rem;
-    color: #444;
-    line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
 }
 
-.card-body ul {
-    padding-left: 20px;
-    margin: 12px 0;
+.card-emoji { font-size: 2.5rem; flex-shrink: 0; }
+
+.card-info { flex: 1; }
+
+.card-info h3 {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: var(--foam);
+  line-height: 1;
 }
 
-.card-body li {
-    margin-bottom: 6px;
+.card-info small {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.7rem;
+  color: color-mix(in srgb, var(--foam) 50%, transparent);
+  display: block;
+  margin: 0.15rem 0 0.4rem;
 }
 
-#close-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 1.6rem;
-    cursor: pointer;
-    color: #aaa;
+.tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+
+.tag {
+  font-size: 0.42rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--glow);
+  border: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
+  padding: 0.15rem 0.45rem;
 }
 
-#close-btn:hover {
-    color: #333;
+/* ── Viewer Screen ── */
+#viewer {
+  background: var(--bg);
+  justify-content: stretch;
+  padding: 0;
 }
 
-.cta-button {
-    display: block;
-    text-align: center;
-    background: #009639;
-    color: white;
-    text-decoration: none;
-    padding: 12px;
-    border-radius: 12px;
-    font-weight: bold;
-    margin-top: 16px;
+model-viewer {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  --progress-bar-color: var(--glow);
+  background: radial-gradient(ellipse at 50% 55%, #102117, var(--bg));
 }
 
-@keyframes pulse {
-    0% { transform: scale(0.98); opacity: 0.7; }
-    50% { transform: scale(1.02); opacity: 1; }
-    100% { transform: scale(0.98); opacity: 0.7; }
+/* Viewer header */
+.vhead {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 20;
+  padding: 1rem 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 90%, transparent), transparent);
+  pointer-events: none;
+}
+
+.vhead .logo {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--foam);
+}
+
+.vhead .logo em { color: var(--glow); }
+
+#backBtn {
+  pointer-events: all;
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--foam) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--foam) 20%, transparent);
+  padding: 0.45rem 0.8rem;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+#backBtn:hover { color: var(--glow); border-color: var(--glow); }
+
+/* Viewer footer */
+.vfoot {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 20;
+  padding: 0.8rem 1.2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(to top, color-mix(in srgb, var(--bg) 92%, transparent) 60%, transparent);
+}
+
+.vfoot small {
+  font-size: 0.48rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--foam) 40%, transparent);
+  animation: pulse 3s ease infinite;
+}
+
+@keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+#arBtn {
+  width: min(320px, 90vw);
+  padding: 0.85rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--bg);
+  background: var(--glow);
+  box-shadow: 0 0 30px color-mix(in srgb, var(--glow) 35%, transparent);
+}
+
+/* ── Info Card ── */
+#infoCard {
+  position: fixed;
+  bottom: -100%;
+  left: 50%;
+  translate: -50% 0;
+  width: min(420px, 93vw);
+  z-index: 600;
+  pointer-events: none;
+  transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#infoCard.open {
+  bottom: 1.5rem;
+  pointer-events: all;
+}
+
+.info-wrap {
+  background: color-mix(in srgb, #0d1a12 97%, transparent);
+  border: 1px solid color-mix(in srgb, var(--teal) 25%, transparent);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px color-mix(in srgb, black 70%, transparent);
+  overflow: hidden;
+}
+
+.info-bar { height: 3px; background: linear-gradient(90deg, var(--glow), var(--teal), transparent); }
+
+.info-body { padding: 1.4rem; }
+
+.info-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.9rem;
+}
+
+.info-head h2 {
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--foam);
+  line-height: 1;
+}
+
+.info-head small {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--foam) 50%, transparent);
+  display: block;
+  margin-top: 0.2rem;
+}
+
+.info-emoji { font-size: 2.2rem; }
+
+hr { border: none; border-top: 1px solid color-mix(in srgb, var(--teal) 30%, transparent); margin-bottom: 0.9rem; }
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  margin-bottom: 0.9rem;
+}
+
+.info-grid dt {
+  font-size: 0.44rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--glow);
+  margin-bottom: 0.12rem;
+}
+
+.info-grid dd { font-size: 0.68rem; color: var(--foam); line-height: 1.4; }
+
+/* ── Live Performance metrics Styling ── */
+.live-tracking-box {
+  border-top: 1px dashed color-mix(in srgb, var(--teal) 20%, transparent); 
+  margin: 0.8rem 0; 
+  padding-top: 0.8rem;
+}
+
+.live-title {
+  font-size: 0.44rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--glow); margin-bottom: 0.4rem;
+}
+
+.fact {
+  background: color-mix(in srgb, var(--teal) 8%, transparent);
+  border-left: 2px solid var(--glow);
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.fact p:first-child {
+  font-size: 0.44rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--glow);
+  margin-bottom: 0.25rem;
+}
+
+.fact p:last-child {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--foam) 85%, transparent);
+  line-height: 1.55;
+}
+
+#closeBtn {
+  width: 100%;
+  padding: 0.65rem;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--foam) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--teal) 20%, transparent);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+#closeBtn:hover { color: var(--glow); border-color: var(--glow); }
+
+/* ── Tap Ripple ── */
+.ripple {
+  position: fixed;
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--glow);
+  pointer-events: none;
+  z-index: 700;
+  translate: -50% -50%;
+  animation: ripple 0.6s ease forwards;
+}
+
+@keyframes ripple {
+  from { scale: 0; opacity: 1; }
+  to   { scale: 2.5; opacity: 0; }
 }
